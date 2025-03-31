@@ -1,0 +1,40 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Correct Project Structure
+      id: correct-project-structure
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Correct Project Structure
+        setup-command: ''
+        command: "./.csse6400/bin/validate_structure.sh"
+        timeout: 5
+        max-score: 50
+    - name: Clean Git Repository
+      id: clean-git-repository
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Clean Git Repository
+        setup-command: ''
+        command: "./.csse6400/bin/clean_repository.sh"
+        timeout: 5
+        max-score: 50
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        CORRECT-PROJECT-STRUCTURE_RESULTS: "${{steps.correct-project-structure.outputs.result}}"
+        CLEAN-GIT-REPOSITORY_RESULTS: "${{steps.clean-git-repository.outputs.result}}"
+      with:
+        runners: correct-project-structure,clean-git-repository
