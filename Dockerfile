@@ -1,4 +1,5 @@
-FROM ubuntu:22.04
+# 千万要注意，macOS必须这么写
+FROM --platform=linux/arm64 ubuntu:22.04
 
 ENV SQLALCHEMY_DATABASE_URI=sqlite:///:memory:
 
